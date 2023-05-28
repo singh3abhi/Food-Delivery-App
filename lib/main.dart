@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/screens/home_screen.dart';
+import 'package:food_delivery_app/screens/location_access_screen.dart';
 import 'package:food_delivery_app/screens/search_screen.dart';
 
 void main() {
@@ -18,10 +19,11 @@ class MyApp extends StatelessWidget {
         // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const LocationAccessScreen(),
       routes: {
         HomeScreen.routename: (context) => const HomeScreen(),
         SearchScreen.routename: (context) => const SearchScreen(),
+        LocationAccessScreen.routename: (context) => const LocationAccessScreen(),
       },
     );
   }

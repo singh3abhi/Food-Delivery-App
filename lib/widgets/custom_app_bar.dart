@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key});
+  const CustomAppBar({super.key, required this.name, required this.address});
+  final String name;
+  final String address;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -9,37 +11,37 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Column(
+      title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              SizedBox(
+              const SizedBox(
                 child: Icon(
                   Icons.near_me_rounded,
                   color: Color.fromARGB(255, 244, 98, 15),
                 ),
               ),
               Text(
-                'g 118',
-                style: TextStyle(
+                name,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 18, 19, 28),
                   fontSize: 16,
                 ),
               ),
-              Icon(
+              const Icon(
                 Icons.keyboard_arrow_down,
                 color: Colors.black,
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 2,
           ),
           Text(
-            'Samta Nager, Bikaner, Rajasthan, 334001, India',
-            style: TextStyle(fontSize: 10, color: Color.fromARGB(255, 81, 82, 81)),
+            address,
+            style: const TextStyle(fontSize: 10, color: Color.fromARGB(255, 81, 82, 81)),
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/screens/home_screen.dart';
+import 'package:food_delivery_app/utils/globals.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -51,7 +52,7 @@ class _LocationAccessScreenState extends State<LocationAccessScreen> {
     street = place.name!;
     address = '${place.subLocality}, ${place.locality}, ${place.administrativeArea}, ${place.postalCode}, ${place.country}';
 
-    setState(() {});
+    GlobalLocationValues.setLocationValues(addressFromPhone: address, nameFromPhone: street);
   }
 
   @override
@@ -62,13 +63,11 @@ class _LocationAccessScreenState extends State<LocationAccessScreen> {
           onPressed: () async {
             Position position = await _determinePosition();
             await getAddressFromLatLong(position);
-            print(street);
-            print(address);
-            setState(() {});
-            HomeScreen(
-              address: address,
-              name: street,
-            );
+
+            // const HomeScreen();
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              return HomeScreen();
+            }));
           },
           style: TextButton.styleFrom(
             fixedSize: const Size(340, 60),

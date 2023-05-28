@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:food_delivery_app/utils/globals.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key, required this.name, required this.address});
-  final String name;
-  final String address;
+  const CustomAppBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -11,39 +10,42 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const SizedBox(
-                child: Icon(
-                  Icons.near_me_rounded,
-                  color: Color.fromARGB(255, 244, 98, 15),
+      title: InkWell(
+        onTap: () {},
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const SizedBox(
+                  child: Icon(
+                    Icons.near_me_rounded,
+                    color: Color.fromARGB(255, 244, 98, 15),
+                  ),
                 ),
-              ),
-              Text(
-                name,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 18, 19, 28),
-                  fontSize: 16,
+                Text(
+                  GlobalLocationValues.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 18, 19, 28),
+                    fontSize: 16,
+                  ),
                 ),
-              ),
-              const Icon(
-                Icons.keyboard_arrow_down,
-                color: Colors.black,
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 2,
-          ),
-          Text(
-            address,
-            style: const TextStyle(fontSize: 10, color: Color.fromARGB(255, 81, 82, 81)),
-          ),
-        ],
+                const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Colors.black,
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 2,
+            ),
+            Text(
+              GlobalLocationValues.address,
+              style: const TextStyle(fontSize: 10, color: Color.fromARGB(255, 81, 82, 81)),
+            ),
+          ],
+        ),
       ),
       centerTitle: true,
       actions: [

@@ -20,7 +20,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           controller: _textcontroller,
           decoration: InputDecoration(
             filled: true,
-            fillColor: Color.fromARGB(255, 255, 255, 255),
+            fillColor: const Color.fromARGB(255, 255, 255, 255),
             hintText: 'Search for dishes & restaurants',
             hintStyle: const TextStyle(color: Color.fromARGB(255, 112, 111, 116)),
             contentPadding: const EdgeInsets.all(10),

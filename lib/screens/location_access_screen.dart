@@ -46,7 +46,6 @@ class _LocationAccessScreenState extends State<LocationAccessScreen> {
       position.latitude,
       position.longitude,
     );
-    print(placemark);
     Placemark place = placemark[0];
 
     street = place.name!;
@@ -65,9 +64,12 @@ class _LocationAccessScreenState extends State<LocationAccessScreen> {
             await getAddressFromLatLong(position);
 
             // const HomeScreen();
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return HomeScreen();
-            }));
+            if (context.mounted) {
+              Navigator.pushNamed(context, HomeScreen.routename);
+            }
+            // Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            //   return const HomeScreen();
+            // }));
           },
           style: TextButton.styleFrom(
             fixedSize: const Size(340, 60),

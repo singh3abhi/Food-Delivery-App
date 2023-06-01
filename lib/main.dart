@@ -3,6 +3,7 @@ import 'package:food_delivery_app/screens/home_screen.dart';
 import 'package:food_delivery_app/screens/location_access_screen.dart';
 import 'package:food_delivery_app/screens/login_screen.dart';
 import 'package:food_delivery_app/screens/search_screen.dart';
+import 'package:food_delivery_app/screens/verify_otp_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         SearchScreen.routename: (context) => const SearchScreen(),
         LocationAccessScreen.routename: (context) => const LocationAccessScreen(),
         LoginScreen.routename: (context) => const LoginScreen(),
+        VerifyOtpScreen.routename: (context) => const VerifyOtpScreen(),
       },
     );
   }

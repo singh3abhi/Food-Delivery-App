@@ -12,3 +12,11 @@ class GlobalLocationValues {
     address = "";
   }
 }
+
+class GlobalUserValues {
+  static String number = '';
+
+  GlobalUserValues.setMobileNumber({required String numberFromPhone}) {
+    number = numberFromPhone;
+  }
+}

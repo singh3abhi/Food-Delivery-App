@@ -1,14 +1,32 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:food_delivery_app/screens/verify_otp_screen.dart';
+import 'package:food_delivery_app/utils/globals.dart';
+import 'package:food_delivery_app/widgets/custom_text_button.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
   static String routename = '/login-screen';
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController textEditingController = TextEditingController();
+  State<LoginScreen> createState() => _LoginScreenState();
+}
 
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _mobileNumberController = TextEditingController();
+  bool _isButtonEnabled = false;
+
+  void _validatePhoneNumber() {
+    String phoneNumber = _mobileNumberController.text;
+    setState(() {
+      print(phoneNumber);
+      _isButtonEnabled = (phoneNumber.length == 10);
+      print(_isButtonEnabled);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(''),
@@ -20,13 +38,19 @@ class LoginScreen extends StatelessWidget {
           children: [
             const Text(
               'Enter your mobile number\nto get OTP',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 26,
+              ),
             ),
             const SizedBox(
               height: 16,
             ),
             TextField(
-              // controller: textEditingController,
+              controller: _mobileNumberController,
+              onChanged: (value) {
+                _validatePhoneNumber();
+              },
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Mobile Number',
@@ -80,6 +104,19 @@ class LoginScreen extends StatelessWidget {
                     color: Color.fromARGB(255, 244, 98, 15),
                   ),
                 ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Opacity(
+              opacity: _isButtonEnabled ? 1.0 : 0.5,
+              child: CustomTextButton(
+                text: 'Get OTP',
+                ontap: _isButtonEnabled
+                    ? () {
+                        GlobalUserValues.setMobileNumber(numberFromPhone: _mobileNumberController.text);
+                        Navigator.pushNamed(context, VerifyOtpScreen.routename);
+                      }
+                    : () {},
               ),
             ),
             const SizedBox(height: 16),

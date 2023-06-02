@@ -16,16 +16,24 @@ class SearchScreen extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 10),
-              Row(
+              Stack(
                 children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back_rounded),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Search for dishes & restaurants'),
+                    ],
                   ),
-                  const SizedBox(
-                    width: 40,
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 0, 0, 0),
+                      child: Image.asset(
+                        'icons/back.png',
+                        width: 23,
+                      ),
+                    ),
                   ),
-                  const Text('Search for dishes & restaurants'),
                 ],
               ),
               const CustomSearchBar(),

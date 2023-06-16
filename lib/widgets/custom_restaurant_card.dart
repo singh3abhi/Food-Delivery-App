@@ -220,16 +220,37 @@ class _RestaurantCardState extends State<RestaurantCard> {
                   widget.item.restaurantName!,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.openSans(
-                    fontSize: 17,
+                    fontSize: 16.5,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Row(
                   children: [
+                    Column(
+                      children: [
+                        const SizedBox(height: 3),
+                        Container(
+                          height: 20,
+                          width: 20,
+                          decoration: BoxDecoration(
+                            color: double.parse(widget.item.rating!) >= 3.9 ? const Color.fromARGB(255, 17, 102, 73) : const Color.fromARGB(255, 27, 166, 114),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: const Icon(
+                            Icons.star,
+                            size: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      width: 4,
+                    ),
                     Text(
                       '${widget.item.rating} (${widget.item.noOfRatings})',
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.openSans(fontSize: 15.5, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.openSans(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                     const Padding(
                       padding: EdgeInsets.all(4.0),

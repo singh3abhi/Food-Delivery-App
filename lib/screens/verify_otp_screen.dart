@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:food_delivery_app/screens/location_access_screen.dart';
 import 'package:food_delivery_app/utils/globals.dart';
 import 'package:food_delivery_app/widgets/custom_text_button.dart';
+import 'package:lottie/lottie.dart';
 import 'package:pinput/pinput.dart';
 
 class VerifyOtpScreen extends StatefulWidget {
@@ -65,6 +66,34 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final defaultPinTheme = PinTheme(
+      height: 50,
+      width: 50,
+      textStyle: const TextStyle(
+        fontSize: 24,
+        color: Colors.black,
+        fontWeight: FontWeight.w500,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        border: Border.all(
+          color: Colors.black.withOpacity(0.3),
+          width: 2,
+        ),
+      ),
+    );
+
+    final focusedPinTheme = defaultPinTheme.copyDecorationWith(
+      border: Border.all(color: const Color.fromARGB(255, 241, 87, 1), width: 2),
+      borderRadius: BorderRadius.circular(10),
+    );
+
+    final submittedPinTheme = defaultPinTheme.copyDecorationWith(
+      border: Border.all(color: const Color.fromARGB(255, 241, 87, 1), width: 2),
+      borderRadius: BorderRadius.circular(10),
+    );
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -98,39 +127,27 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                 controller: _otpController,
                 onChanged: (value) => _validateOTP(),
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                defaultPinTheme: PinTheme(
-                  height: 50,
-                  width: 50,
-                  textStyle: const TextStyle(
-                    fontSize: 24,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Colors.black.withOpacity(0.3),
-                      width: 2,
-                    ),
-                  ),
-                ),
+                defaultPinTheme: defaultPinTheme,
+                focusedPinTheme: focusedPinTheme,
+
+                submittedPinTheme: submittedPinTheme,
+                // errorPinTheme: ,
               ),
             ),
             const SizedBox(height: 18),
+
             Visibility(
-              visible: countDownSeconds > 0,
+              visible: countDownSeconds > 0 && _otpController.length == 0,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Transform.scale(
-                    scale: 0.7,
+                    scale: 0.5,
                     child: const CircularProgressIndicator(
                       color: Color.fromARGB(255, 241, 87, 1),
+                      backgroundColor: Color.fromARGB(83, 241, 89, 1),
+                      strokeWidth: 7,
                     ),
-                  ),
-                  const SizedBox(
-                    width: 5,
                   ),
                   Text(
                     'Auto fetching OTP..',
@@ -147,8 +164,39 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                 ontap: _isButtonEnabled
                     ? () {
                         Navigator.pushNamed(context, LocationAccessScreen.routename);
+                        print(MediaQuery.of(context).size.width);
+                        print(MediaQuery.of(context).size.height);
                       }
                     : () {},
+              ),
+            ),
+            // Pre Caching Lottie Gifs
+            Visibility(
+              visible: false,
+              maintainSize: false,
+              maintainState: true,
+              maintainAnimation: false,
+              maintainInteractivity: false,
+              child: Row(
+                children: [
+                  Lottie.network(
+                    'https://assets10.lottiefiles.com/packages/lf20_kuiykf08.json',
+                  ),
+                ],
+              ),
+            ),
+            Visibility(
+              visible: false,
+              maintainSize: false,
+              maintainState: true,
+              maintainAnimation: false,
+              maintainInteractivity: false,
+              child: Row(
+                children: [
+                  Lottie.network(
+                    'https://assets6.lottiefiles.com/packages/lf20_urdso8u9.json',
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 18),

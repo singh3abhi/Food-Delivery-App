@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/screens/search_screen.dart';
+import 'package:page_transition/page_transition.dart';
 
 class CustomSearchBarButton extends StatelessWidget {
   const CustomSearchBarButton({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
     return Container(
-      height: 50,
-      width: 350,
+      height: 46,
+      width: width * 0.915,
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 241, 240, 245),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(13),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -19,7 +21,15 @@ class CustomSearchBarButton extends StatelessWidget {
           Expanded(
             child: TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, SearchScreen.routename);
+                // Navigator.pushNamed(context, SearchScreen.routename);
+
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: const SearchScreen(),
+                    type: PageTransitionType.rightToLeft,
+                  ),
+                );
               },
               style: const ButtonStyle(splashFactory: NoSplash.splashFactory),
               child: const Row(
@@ -60,7 +70,7 @@ class CustomSearchBarButton extends StatelessWidget {
                 style: const ButtonStyle(splashFactory: NoSplash.splashFactory),
               ),
             ],
-          )
+          ),
         ],
       ),
     );

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:food_delivery_app/screens/old_home_screen.dart';
 import 'package:food_delivery_app/screens/home_screen.dart';
+import 'package:food_delivery_app/screens/nested_home_screen3.dart';
 import 'package:food_delivery_app/utils/globals.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:lottie/lottie.dart';
 
 class LocationAccessScreen extends StatefulWidget {
   const LocationAccessScreen({super.key});
@@ -58,32 +61,85 @@ class _LocationAccessScreenState extends State<LocationAccessScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: TextButton(
-          onPressed: () async {
-            Position position = await _determinePosition();
-            await getAddressFromLatLong(position);
+    final double height = MediaQuery.of(context).size.height;
 
-            // const HomeScreen();
-            if (context.mounted) {
-              Navigator.pushNamed(context, HomeScreen.routename);
-            }
-            // Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            //   return const HomeScreen();
-            // }));
-          },
-          style: TextButton.styleFrom(
-            fixedSize: const Size(340, 60),
-            backgroundColor: const Color.fromARGB(255, 241, 87, 1),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(''),
+        automaticallyImplyLeading: false,
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: height * 0.025),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'What\'s your location?',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  'We need your location to show available\nrestaurants & products',
+                  style: TextStyle(fontSize: 17, color: Colors.grey.shade700),
+                ),
+              ],
+            ),
           ),
-          child: const Text(
-            'Allow location access',
-            style: TextStyle(fontSize: 17),
+          const SizedBox(height: 30),
+          Lottie.network(
+            'https://assets10.lottiefiles.com/packages/lf20_kuiykf08.json',
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+            child: TextButton(
+              onPressed: () async {
+                Position position = await _determinePosition();
+                await getAddressFromLatLong(position);
+
+                // const HomeScreen();
+                if (context.mounted) {
+                  print(homeCategoryItems.length);
+                  print(homeCategoryItems.length / 2);
+                  print(homeCategoryItems.length ~/ 2);
+                  Navigator.pushNamed(context, HomeScreen.routename);
+                }
+                // Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                //   return const HomeScreen();
+                // }));
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 241, 87, 1),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                minimumSize: const Size(double.infinity, 60),
+              ),
+              child: const Text(
+                'Allow location access',
+                style: TextStyle(fontSize: 17),
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: () {},
+                child: const Text(
+                  'Enter Location Manually',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 241, 87, 1),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }

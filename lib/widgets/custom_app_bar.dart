@@ -9,7 +9,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
+    return SliverAppBar(
+      floating: true,
+      // surfaceTintColor: Colors.white,
+      backgroundColor: Colors.white,
+
+      scrolledUnderElevation: 0.0,
       automaticallyImplyLeading: false,
       title: InkWell(
         onTap: () {},
@@ -29,7 +34,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 18, 19, 28),
-                    fontSize: 16,
+                    fontSize: 18,
                   ),
                 ),
                 const Icon(
@@ -43,7 +48,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             Text(
               GlobalLocationValues.address,
-              style: const TextStyle(fontSize: 10, color: Color.fromARGB(255, 81, 82, 81)),
+              style: const TextStyle(fontSize: 14, color: Color.fromARGB(255, 81, 82, 81)),
             ),
           ],
         ),

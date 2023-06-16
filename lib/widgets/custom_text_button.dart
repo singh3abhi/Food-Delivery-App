@@ -10,7 +10,7 @@ class CustomTextButton extends StatelessWidget {
     return TextButton(
       onPressed: ontap,
       style: TextButton.styleFrom(
-        fixedSize: const Size(360, 60),
+        minimumSize: const Size(double.infinity, 60),
         backgroundColor: const Color.fromARGB(255, 241, 87, 1),
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(

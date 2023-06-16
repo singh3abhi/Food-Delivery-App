@@ -38,6 +38,17 @@ dependencies:
   geocoding: ^2.1.0
   pinput: ^2.2.31
   flutter_native_splash: ^2.3.0
+  cached_network_image: ^3.2.3
+  transparent_image: ^2.0.1
+  lottie: ^2.4.0
+  page_transition: ^2.0.9
+  google_fonts: ^4.0.4
+  flex_with_main_child: ^0.2.1
+  drop_shadow_image: ^0.9.1
+  flutter_polygon: ^0.3.0+2
+  like_button: ^2.0.5
+  shimmer: ^3.0.0
+  flutter_advanced_networkimage_2: ^2.0.1
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +88,8 @@ flutter:
     - icons/
     - assets/
     - assets/background/
+    - assets/banners/
+    - assets/restaurantImages/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

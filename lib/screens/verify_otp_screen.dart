@@ -1,14 +1,19 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:food_delivery_app/provider/auth_provider.dart';
 import 'package:food_delivery_app/screens/location_access_screen.dart';
+import 'package:food_delivery_app/screens/user_registration_screen.dart';
 import 'package:food_delivery_app/utils/globals.dart';
 import 'package:food_delivery_app/widgets/custom_text_button.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pinput/pinput.dart';
+import 'package:provider/provider.dart';
 
 class VerifyOtpScreen extends StatefulWidget {
-  const VerifyOtpScreen({super.key});
+  final String verificationId;
+  // final TextEditingController otpController = TextEditingController();
+  const VerifyOtpScreen({super.key, required this.verificationId});
   static String routename = '/verify-otp-screen';
 
   @override
@@ -16,22 +21,10 @@ class VerifyOtpScreen extends StatefulWidget {
 }
 
 class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
-  final TextEditingController _otpController = TextEditingController();
   int countDownSeconds = 30;
   Timer? timer;
   bool _isButtonEnabled = false;
-
-  @override
-  void initState() {
-    startTimer();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
+  String? otpCode;
 
   void startTimer() {
     const onSec = Duration(seconds: 1);
@@ -55,17 +48,19 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
     // return formattedMinutes;
   }
 
-  void _validateOTP() {
-    String otp = _otpController.text;
-    setState(() {
-      _isButtonEnabled = (otp.length == 6);
-    });
-    print(_isButtonEnabled);
-    print(otp);
-  }
-
   @override
   Widget build(BuildContext context) {
+    TextEditingController otpController = Provider.of<AuthProvider>(context, listen: false).otpcontroller;
+
+    void validateOTP() {
+      otpCode = otpController.text;
+      setState(() {
+        _isButtonEnabled = (otpCode!.length == 6);
+      });
+      print(_isButtonEnabled);
+      print(otpCode);
+    }
+
     final defaultPinTheme = PinTheme(
       height: 50,
       width: 50,
@@ -94,18 +89,34 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
       borderRadius: BorderRadius.circular(10),
     );
 
+    final isLoading = Provider.of<AuthProvider>(context, listen: true).isLoading;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Image.asset(
-              'icons/back.png',
-              width: 26,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Image.asset(
+                  'icons/back.png',
+                  width: 26,
+                ),
+              ),
             ),
-          ),
+            if (isLoading)
+              Transform.scale(
+                scale: 0.5,
+                child: const CircularProgressIndicator(
+                  color: Color.fromARGB(255, 241, 87, 1),
+                  backgroundColor: Color.fromARGB(83, 241, 89, 1),
+                  strokeWidth: 7,
+                ),
+              ),
+          ],
         ),
       ),
       body: Padding(
@@ -123,13 +134,13 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
             const SizedBox(height: 16),
             SizedBox(
               child: Pinput(
+                androidSmsAutofillMethod: AndroidSmsAutofillMethod.none,
                 length: 6,
-                controller: _otpController,
-                onChanged: (value) => _validateOTP(),
+                controller: otpController,
+                onChanged: (value) => validateOTP(),
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 defaultPinTheme: defaultPinTheme,
                 focusedPinTheme: focusedPinTheme,
-
                 submittedPinTheme: submittedPinTheme,
                 // errorPinTheme: ,
               ),
@@ -137,7 +148,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
             const SizedBox(height: 18),
 
             Visibility(
-              visible: countDownSeconds > 0 && _otpController.length == 0,
+              visible: countDownSeconds > 0 && otpController.length == 0,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -161,11 +172,10 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
               opacity: _isButtonEnabled ? 1 : 0.5,
               child: CustomTextButton(
                 text: 'Continue',
+                height: 60,
                 ontap: _isButtonEnabled
                     ? () {
-                        Navigator.pushNamed(context, LocationAccessScreen.routename);
-                        print(MediaQuery.of(context).size.width);
-                        print(MediaQuery.of(context).size.height);
+                        verifyOTP(context, otpCode!);
                       }
                     : () {},
               ),
@@ -285,6 +295,42 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  // Verify OTP
+
+  void verifyOTP(BuildContext context, String userOtp) {
+    final ap = Provider.of<AuthProvider>(context, listen: false);
+    ap.verifyOtp(
+      context: context,
+      verificationId: widget.verificationId,
+      userOtp: userOtp,
+      onSuccess: () {
+        // check wheather user exists in db
+        ap.checkExistingUser().then(
+          (value) async {
+            if (value == true) {
+              // user exists in our app
+              ap.getDataFromFirestore().then(
+                    (value) => ap.saveUserDataToSP().then(
+                          (value) => ap.setSignIn().then(
+                                (value) => Navigator.pushNamed(context, LocationAccessScreen.routename),
+                              ),
+                        ),
+                  );
+            } else {
+              // new user
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const UserRegistrationScreen(),
+                  ),
+                  (route) => false);
+            }
+          },
+        );
+      },
     );
   }
 }

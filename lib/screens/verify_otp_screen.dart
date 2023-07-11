@@ -5,7 +5,9 @@ import 'package:food_delivery_app/provider/auth_provider.dart';
 import 'package:food_delivery_app/screens/location_access_screen.dart';
 import 'package:food_delivery_app/screens/user_registration_screen.dart';
 import 'package:food_delivery_app/utils/globals.dart';
+import 'package:food_delivery_app/utils/utils.dart';
 import 'package:food_delivery_app/widgets/custom_text_button.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +27,21 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
   Timer? timer;
   bool _isButtonEnabled = false;
   String? otpCode;
+  bool _isOtpResent = false;
+  TextEditingController otpController = TextEditingController();
+  Color submittedColor = kColor;
+
+  @override
+  void initState() {
+    startTimer();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
 
   void startTimer() {
     const onSec = Duration(seconds: 1);
@@ -50,8 +67,6 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController otpController = Provider.of<AuthProvider>(context, listen: false).otpcontroller;
-
     void validateOTP() {
       otpCode = otpController.text;
       setState(() {
@@ -80,27 +95,29 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
     );
 
     final focusedPinTheme = defaultPinTheme.copyDecorationWith(
-      border: Border.all(color: const Color.fromARGB(255, 241, 87, 1), width: 2),
+      border: Border.all(color: kColor, width: 2),
       borderRadius: BorderRadius.circular(10),
     );
 
     final submittedPinTheme = defaultPinTheme.copyDecorationWith(
-      border: Border.all(color: const Color.fromARGB(255, 241, 87, 1), width: 2),
+      border: Border.all(color: submittedColor, width: 2),
       borderRadius: BorderRadius.circular(10),
     );
 
     final isLoading = Provider.of<AuthProvider>(context, listen: true).isLoading;
+    final ap = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Padding(
-                padding: const EdgeInsets.only(left: 10),
+                padding: const EdgeInsets.only(left: 0),
                 child: Image.asset(
                   'icons/back.png',
                   width: 26,
@@ -111,7 +128,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
               Transform.scale(
                 scale: 0.5,
                 child: const CircularProgressIndicator(
-                  color: Color.fromARGB(255, 241, 87, 1),
+                  color: kColor,
                   backgroundColor: Color.fromARGB(83, 241, 89, 1),
                   strokeWidth: 7,
                 ),
@@ -125,10 +142,13 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Verify the OTP sent to\n${GlobalUserValues.number}',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 26,
+              'Verify with OTP sent to\n${ap.phoneNumber}',
+              style: GoogleFonts.figtree(
+                fontWeight: FontWeight.w800,
+                fontSize: 30,
+                letterSpacing: -0.5,
+                color: Colors.black,
+                height: 1.2,
               ),
             ),
             const SizedBox(height: 16),
@@ -155,14 +175,21 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                   Transform.scale(
                     scale: 0.5,
                     child: const CircularProgressIndicator(
-                      color: Color.fromARGB(255, 241, 87, 1),
+                      color: kColor,
                       backgroundColor: Color.fromARGB(83, 241, 89, 1),
                       strokeWidth: 7,
                     ),
                   ),
                   Text(
                     'Auto fetching OTP..',
-                    style: TextStyle(fontSize: 17, color: Colors.grey.shade700),
+                    // style: TextStyle(fontSize: 17, color: Colors.grey.shade700),
+                    style: GoogleFonts.figtree(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      letterSpacing: -0.5,
+                      color: Colors.grey.shade700.withOpacity(1),
+                      height: 1.2,
+                    ),
                   ),
                 ],
               ),
@@ -214,7 +241,14 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
               visible: countDownSeconds > 0,
               child: Text(
                 'Didn\'t receive it? Retry in ${formatCountDown()}',
-                style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+                // style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+                style: GoogleFonts.figtree(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 18,
+                  letterSpacing: -0.5,
+                  color: Colors.grey.shade600.withOpacity(0.8),
+                  height: 1.2,
+                ),
               ),
             ),
             Visibility(
@@ -222,69 +256,117 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (_isOtpResent)
+                    Text(
+                      'OTP has been sent by SMS',
+                      style: GoogleFonts.figtree(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
+                        letterSpacing: -0.5,
+                        color: Colors.grey.shade600.withOpacity(0.8),
+                        height: 1.2,
+                      ),
+                    ),
+                  if (_isOtpResent) const SizedBox(height: 5),
                   Text(
                     'Retry via:',
-                    style: TextStyle(fontSize: 17, color: Colors.grey.shade700),
+                    style: GoogleFonts.figtree(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      letterSpacing: -0.5,
+                      color: Colors.grey.shade600.withOpacity(0.8),
+                      height: 1.2,
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Container(
-                        height: 40,
-                        width: 70,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(40, 241, 87, 1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Row(
-                          children: [
-                            SizedBox(
-                              width: 3,
+                      GestureDetector(
+                        onTap: _isOtpResent
+                            ? () {}
+                            : () {
+                                ap.resendOtp(context, '+91${ap.phoneNumber}');
+                                setState(() {
+                                  _isOtpResent = true;
+                                });
+                              },
+                        child: Opacity(
+                          opacity: _isOtpResent ? 0.5 : 1,
+                          child: Container(
+                            height: 40,
+                            width: 75,
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(40, 241, 87, 1),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            Icon(
-                              Icons.messenger_outline_rounded,
-                              color: Color.fromARGB(255, 241, 87, 1),
-                              size: 20,
+                            child: Row(
+                              children: [
+                                const SizedBox(
+                                  width: 2,
+                                ),
+                                Transform.scale(
+                                  scale: 0.7,
+                                  child: const Icon(
+                                    Icons.messenger_outline,
+                                    color: kColor,
+                                    size: 30,
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  'SMS',
+                                  style: GoogleFonts.figtree(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15,
+                                    letterSpacing: -0.5,
+                                    color: kColor,
+                                    height: 1.2,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(width: 8),
-                            Text(
-                              'SMS',
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 241, 87, 1),
-                                fontWeight: FontWeight.w900,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                       const SizedBox(width: 15),
-                      Container(
-                        height: 40,
-                        width: 70,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(40, 241, 87, 1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Row(
-                          children: [
-                            SizedBox(
-                              width: 3,
+                      GestureDetector(
+                        onTap: _isOtpResent
+                            ? () {
+                                showSnackBar(context, 'Phone Verification Currently Not Available');
+                              }
+                            : () {},
+                        child: Opacity(
+                          opacity: _isOtpResent ? 0.5 : 1,
+                          child: Container(
+                            height: 40,
+                            width: 75,
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(40, 241, 87, 1),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            Icon(
-                              Icons.phone,
-                              color: Color.fromARGB(255, 241, 87, 1),
+                            child: Row(
+                              children: [
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                const Icon(
+                                  Icons.phone,
+                                  color: kColor,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'CALL',
+                                  style: GoogleFonts.figtree(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15,
+                                    letterSpacing: -0.5,
+                                    color: kColor,
+                                    height: 1.2,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(width: 6),
-                            Text(
-                              'CALL',
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 241, 87, 1),
-                                fontWeight: FontWeight.w900,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
@@ -308,6 +390,9 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
       userOtp: userOtp,
       onSuccess: () {
         // check wheather user exists in db
+        setState(() {
+          submittedColor = Colors.green;
+        });
         ap.checkExistingUser().then(
           (value) async {
             if (value == true) {
@@ -332,5 +417,10 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
         );
       },
     );
+  }
+
+  void resendOTP(BuildContext context, String phoneNumber) {
+    final ap = Provider.of<AuthProvider>(context, listen: false);
+    ap.resendOtp(context, phoneNumber);
   }
 }

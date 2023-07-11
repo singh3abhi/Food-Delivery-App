@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:food_delivery_app/model/user_model.dart';
 import 'package:food_delivery_app/screens/verify_otp_screen.dart';
 import 'package:food_delivery_app/utils/utils.dart';
-import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -16,15 +15,21 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? _uid;
   String get uid => _uid!;
+  String? _phoneNumber;
+  String get phoneNumber => _phoneNumber!;
   UserModel? _userModel;
   UserModel get userModel => _userModel!;
-  TextEditingController otpcontroller = TextEditingController();
+  String otp = '';
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   AuthProvider() {
     checkSignIn();
+  }
+
+  void setPhoneNumber({required String phoneNumber}) {
+    _phoneNumber = phoneNumber;
   }
 
   void checkSignIn() async {
@@ -43,12 +48,15 @@ class AuthProvider extends ChangeNotifier {
   // sign in
   void signInWithPhone(BuildContext context, String phoneNumber) async {
     try {
+      _isLoading = true;
+      notifyListeners();
       await _firebaseAuth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
           await _firebaseAuth.signInWithCredential(phoneAuthCredential);
-          otpcontroller.setText(phoneAuthCredential.smsCode!);
+          otp = phoneAuthCredential.smsCode!;
           notifyListeners();
+          print('Verification Completed');
 
           // Getting and storing the uid so we can use it before sending it to firestore
           User? user = (await _firebaseAuth.signInWithCredential(phoneAuthCredential)).user;
@@ -66,11 +74,15 @@ class AuthProvider extends ChangeNotifier {
               builder: (context) => VerifyOtpScreen(verificationId: verificationId),
             ),
           );
+          _isLoading = false;
+          notifyListeners();
         },
         codeAutoRetrievalTimeout: (verificationId) {},
       );
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message.toString());
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -99,6 +111,38 @@ class AuthProvider extends ChangeNotifier {
 
       _isLoading = false;
       notifyListeners();
+    } on FirebaseAuthException catch (e) {
+      showSnackBar(context, e.message.toString());
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void resendOtp(BuildContext context, String phoneNumber) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _firebaseAuth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
+          await _firebaseAuth.signInWithCredential(phoneAuthCredential);
+
+          // Getting and storing the uid so we can use it before sending it to firestore
+          User? user = (await _firebaseAuth.signInWithCredential(phoneAuthCredential)).user;
+          if (user != null) {
+            _uid = user.uid;
+          }
+        },
+        verificationFailed: (error) {
+          throw Exception(error.message);
+        },
+        codeSent: (verificationId, forceResendingToken) {
+          // showSnackBar(context, 'OTP again sent To the $phoneNumber for verification');
+          _isLoading = false;
+          notifyListeners();
+        },
+        codeAutoRetrievalTimeout: (verificationId) {},
+      );
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message.toString());
       _isLoading = false;

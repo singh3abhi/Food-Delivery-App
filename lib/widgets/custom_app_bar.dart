@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery_app/utils/globals.dart';
+import 'package:food_delivery_app/provider/location_provider.dart';
+import 'package:food_delivery_app/screens/location_search_screen.dart';
+import 'package:food_delivery_app/screens/settings_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -9,15 +14,25 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lp = Provider.of<LocationProvider>(context, listen: false);
     return SliverAppBar(
       floating: true,
       // surfaceTintColor: Colors.white,
       backgroundColor: Colors.white,
-
       scrolledUnderElevation: 0.0,
       automaticallyImplyLeading: false,
       title: InkWell(
-        onTap: () {},
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        onTap: () {
+          Navigator.push(
+            context,
+            PageTransition(
+              child: const LocationSearchScreen(),
+              type: PageTransitionType.bottomToTop,
+            ),
+          );
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -29,12 +44,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     color: Color.fromARGB(255, 244, 98, 15),
                   ),
                 ),
-                Text(
-                  GlobalLocationValues.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 18, 19, 28),
-                    fontSize: 18,
+                Flexible(
+                  child: Text(
+                    lp.mainAddress,
+                    // style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 18, 19, 28), fontSize: 16.5),
+                    style: GoogleFonts.nunito(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 18.5,
+                      letterSpacing: -0.5,
+                      color: Colors.black,
+                      height: 1,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const Icon(
@@ -47,8 +68,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               height: 2,
             ),
             Text(
-              GlobalLocationValues.address,
-              style: const TextStyle(fontSize: 14, color: Color.fromARGB(255, 81, 82, 81)),
+              lp.secondaryAddress,
+              // style: const TextStyle(fontSize: 13, color: Color.fromARGB(255, 81, 82, 81)),
+              style: GoogleFonts.nunito(
+                fontWeight: FontWeight.w600,
+                fontSize: 12.5,
+                letterSpacing: -0.5,
+                color: Colors.black54,
+                // height: 1,
+              ),
             ),
           ],
         ),
@@ -65,7 +93,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Align(
             alignment: Alignment.center,
             child: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  PageTransition(child: const SettingsScreen(), type: PageTransitionType.rightToLeft),
+                );
+              },
               icon: const Icon(
                 Icons.person_rounded,
                 color: Colors.white,

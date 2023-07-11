@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/screens/search_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
 class CustomSearchBarButton extends StatelessWidget {
-  const CustomSearchBarButton({super.key});
+  const CustomSearchBarButton({super.key, required this.text, this.isCenter = false});
+  final String text;
+  final bool isCenter;
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +15,7 @@ class CustomSearchBarButton extends StatelessWidget {
       height: 46,
       width: width * 0.915,
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 241, 240, 245),
+        color: const Color.fromARGB(255, 242, 242, 242),
         borderRadius: BorderRadius.circular(13),
       ),
       child: Row(
@@ -21,8 +24,6 @@ class CustomSearchBarButton extends StatelessWidget {
           Expanded(
             child: TextButton(
               onPressed: () {
-                // Navigator.pushNamed(context, SearchScreen.routename);
-
                 Navigator.push(
                   context,
                   PageTransition(
@@ -32,18 +33,23 @@ class CustomSearchBarButton extends StatelessWidget {
                 );
               },
               style: const ButtonStyle(splashFactory: NoSplash.splashFactory),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Row(
                 children: [
+                  if (isCenter) SizedBox(width: width * 0.248),
                   Text(
-                    'Search for dishes & restaurants',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 112, 111, 116),
-                      fontSize: 16,
+                    text,
+                    style: GoogleFonts.nunito(
                       fontWeight: FontWeight.w500,
+                      fontSize: 16.5,
+                      letterSpacing: -0.5,
+                      wordSpacing: 0,
+                      color: Colors.black54,
+                      height: 1,
                     ),
                   ),
-                  Icon(
+                  // SizedBox(width: width * 0.368),
+                  isCenter ? SizedBox(width: width * 0.132) : SizedBox(width: width * 0.148),
+                  const Icon(
                     Icons.search,
                     color: Color.fromARGB(255, 106, 105, 110),
                   )

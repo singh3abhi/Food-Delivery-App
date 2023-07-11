@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/screens/login_screen.dart';
+import 'package:food_delivery_app/utils/globals.dart';
 import 'package:food_delivery_app/widgets/custom_text_button.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -145,7 +146,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> with TickerProvider
                       padding: EdgeInsets.all(8.0),
                       child: Icon(
                         Icons.circle,
-                        color: Color.fromARGB(255, 241, 87, 1),
+                        color: kColor,
                         size: 7,
                       ),
                     ),
@@ -157,7 +158,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> with TickerProvider
                       padding: EdgeInsets.all(8.0),
                       child: Icon(
                         Icons.circle,
-                        color: Color.fromARGB(255, 241, 87, 1),
+                        color: kColor,
                         size: 7,
                       ),
                     ),
@@ -182,6 +183,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> with TickerProvider
                 const SizedBox(height: 10),
                 CustomTextButton(
                   text: 'Get Started',
+                  height: 60,
                   ontap: () => Navigator.pushNamed(context, LoginScreen.routename),
                 ),
                 const SizedBox(height: 40),

@@ -1,8 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:food_delivery_app/screens/verify_otp_screen.dart';
+import 'package:food_delivery_app/provider/auth_provider.dart';
 import 'package:food_delivery_app/utils/globals.dart';
+import 'package:food_delivery_app/utils/utils.dart';
 import 'package:food_delivery_app/widgets/custom_text_button.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,11 +16,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _mobileNumberController = TextEditingController();
+  final TextEditingController mobileNumberController = TextEditingController();
   bool _isButtonEnabled = false;
 
   void _validatePhoneNumber() {
-    String phoneNumber = _mobileNumberController.text;
+    String phoneNumber = mobileNumberController.text;
     setState(() {
       print(phoneNumber);
       _isButtonEnabled = (phoneNumber.length == 10);
@@ -27,9 +30,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ap = Provider.of<AuthProvider>(context, listen: true);
+    final isLoading = ap.isLoading;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(''),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 0),
+                child: Image.asset(
+                  'icons/back.png',
+                  width: 26,
+                ),
+              ),
+            ),
+            if (isLoading)
+              Transform.scale(
+                scale: 0.5,
+                child: const CircularProgressIndicator(
+                  color: kColor,
+                  backgroundColor: Color.fromARGB(83, 241, 89, 1),
+                  strokeWidth: 7,
+                ),
+              ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(18.0),
@@ -47,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 16,
             ),
             TextField(
-              controller: _mobileNumberController,
+              controller: mobileNumberController,
               onChanged: (value) {
                 _validatePhoneNumber();
               },
@@ -111,10 +141,10 @@ class _LoginScreenState extends State<LoginScreen> {
               opacity: _isButtonEnabled ? 1.0 : 0.5,
               child: CustomTextButton(
                 text: 'Get OTP',
+                height: 60,
                 ontap: _isButtonEnabled
                     ? () {
-                        GlobalUserValues.setMobileNumber(numberFromPhone: _mobileNumberController.text);
-                        Navigator.pushNamed(context, VerifyOtpScreen.routename);
+                        sendPhoneNumber();
                       }
                     : () {},
               ),
@@ -128,9 +158,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextSpan(
                     text: 'terms of service',
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () {
+                      ..onTap = () async {
                         // Single tapped.
-                        print('test1');
+                        var url = Uri.parse('https://www.swiggy.com/terms-and-conditions');
+                        if (await canLaunchUrl(url)) {
+                          launchUrl(url, mode: LaunchMode.externalApplication);
+                        } else {
+                          if (context.mounted) showSnackBar(context, 'Cannot Load URL');
+                        }
                       },
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
@@ -143,9 +178,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextSpan(
                     text: 'privacy policy ',
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () {
+                      ..onTap = () async {
                         // Single tapped.
-                        print('test2');
+                        var url = Uri.parse('https://www.swiggy.com/privacy-policy');
+                        if (await canLaunchUrl(url)) {
+                          launchUrl(url, mode: LaunchMode.externalApplication);
+                        } else {
+                          if (context.mounted) showSnackBar(context, 'Cannot Load URL');
+                        }
                       },
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
@@ -161,5 +201,12 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  void sendPhoneNumber() {
+    final ap = Provider.of<AuthProvider>(context, listen: false);
+    String phoneNumber = mobileNumberController.text.trim();
+    ap.setPhoneNumber(phoneNumber: phoneNumber);
+    ap.signInWithPhone(context, '+91$phoneNumber');
   }
 }

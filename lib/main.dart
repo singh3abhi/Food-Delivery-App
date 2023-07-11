@@ -1,14 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
+import 'package:food_delivery_app/provider/auth_provider.dart';
+import 'package:food_delivery_app/provider/location_provider.dart';
+import 'package:food_delivery_app/provider/state_provider.dart';
 import 'package:food_delivery_app/screens/home_screen.dart';
-
+import 'package:food_delivery_app/screens/home_shimmer_screen.dart';
 import 'package:food_delivery_app/screens/location_access_screen.dart';
 import 'package:food_delivery_app/screens/login_screen.dart';
 import 'package:food_delivery_app/screens/onBoarding_screen.dart';
 import 'package:food_delivery_app/screens/search_screen.dart';
 import 'package:food_delivery_app/screens/splash_screen.dart';
-import 'package:food_delivery_app/screens/verify_otp_screen.dart';
-
+import 'package:food_delivery_app/utils/globals.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -16,6 +19,7 @@ import 'package:flutter/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   await loadImage(const NetworkImage('https://raw.githubusercontent.com/singh3abhi/Food-Delivery-App/main/assets/background/1.jpeg'));
 
   runApp(const MyApp());
@@ -65,23 +69,69 @@ class MyApp extends StatelessWidget {
     //     statusBarIconBrightness: Brightness.dark,
     //   ),
     // );
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LocationProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => StateProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          scaffoldBackgroundColor: Colors.white,
+          // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          textSelectionTheme: const TextSelectionThemeData(
+            cursorColor: kColor, //<-- SEE HERE
+          ),
+          useMaterial3: true,
+        ),
+        scrollBehavior: CustomScrollBehavior(),
+        home: const StatePersistence(),
+        routes: {
+          HomeScreen.routename: (context) => const HomeScreen(),
+          SearchScreen.routename: (context) => const SearchScreen(),
+          LocationAccessScreen.routename: (context) => const LocationAccessScreen(),
+          LoginScreen.routename: (context) => const LoginScreen(),
+          // VerifyOtpScreen.routename: (context) => const VerifyOtpScreen(),
+          CustomSplashScreen.routename: (context) => const CustomSplashScreen(),
+          OnBoardingScreen.routename: (context) => const OnBoardingScreen(),
+        },
       ),
-      scrollBehavior: CustomScrollBehavior(),
-      home: const OnBoardingScreen(),
-      routes: {
-        HomeScreen.routename: (context) => const HomeScreen(),
-        SearchScreen.routename: (context) => const SearchScreen(),
-        LocationAccessScreen.routename: (context) => const LocationAccessScreen(),
-        LoginScreen.routename: (context) => const LoginScreen(),
-        VerifyOtpScreen.routename: (context) => const VerifyOtpScreen(),
-        CustomSplashScreen.routename: (context) => const CustomSplashScreen(),
-        OnBoardingScreen.routename: (context) => const OnBoardingScreen(),
+    );
+  }
+}
+
+class StatePersistence extends StatelessWidget {
+  const StatePersistence({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final ap = Provider.of<AuthProvider>(context, listen: false);
+
+    Future getDataFromSP() async {
+      if (ap.isSignedIn) {
+        ap.getDataFromSP();
+      }
+    }
+
+    return FutureBuilder(
+      future: getDataFromSP(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const HomeShimmerScreen();
+        } else {
+          if (ap.isSignedIn) {
+            return const HomeScreen();
+          } else {
+            return const OnBoardingScreen();
+          }
+        }
       },
     );
   }
@@ -121,7 +171,7 @@ class CustomScrollBehavior extends ScrollBehavior {
     }
     return GlowingOverscrollIndicator(
       axisDirection: details.direction,
-      color: const Color.fromARGB(255, 241, 87, 1),
+      color: kColor,
       child: child,
     );
   }

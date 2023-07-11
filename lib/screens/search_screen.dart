@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_advanced_networkimage_2/provider.dart';
 import 'package:food_delivery_app/utils/globals.dart';
 import 'package:food_delivery_app/widgets/custom_search_bar_text_field.dart';
 import 'package:food_delivery_app/widgets/custom_category_card.dart';
@@ -13,22 +14,35 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  bool _isLoading = true;
+  bool isLoading = false;
+  final TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 1), () {
-      setState(() {
-        _isLoading = false;
-      });
-    });
-
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => loadData());
+  }
+
+  Future loadData() async {
+    setState(() => isLoading = true);
+
+    await Future.wait(searchCategoryItems.map((items) => cacheImage(context, items.urlImage)).toList());
+
+    await Future.delayed(const Duration(milliseconds: 400));
+
+    setState(() => isLoading = false);
+  }
+
+  Future cacheImage(BuildContext context, String urlImage) {
+    return precacheImage(
+      AdvancedNetworkImage(urlImage, useDiskCache: true, cacheRule: const CacheRule(maxAge: Duration(days: 7))),
+      context,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
+    return isLoading
         ? Scaffold(
             body: Center(
               child: Container(
@@ -41,7 +55,7 @@ class _SearchScreenState extends State<SearchScreen> {
         : Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,
-              toolbarHeight: 90,
+              toolbarHeight: 96,
               flexibleSpace: SafeArea(
                 // child:  color: Colors.blue,
                 child: Column(
@@ -67,7 +81,11 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ],
                     ),
-                    const CustomSearchBar(),
+                    CustomSearchBar(
+                      text: 'Search for dishes & restaurants',
+                      check: false,
+                      controller: controller,
+                    ),
                   ],
                 ),
               ),

@@ -33,7 +33,7 @@ This repository is still under development, and I will continue to add more feat
 
 | Screen 6 | Screen 7 | Screen 8 |
 | :---: | :---: | :---: | 
-| <img src="https://raw.githubusercontent.com/singh3abhi/Food-Delivery-App/main/screenshots/6.png" alt="Screen 5" width="275"/> | <img src="https://raw.githubusercontent.com/singh3abhi/Food-Delivery-App/main/screenshots/7.png" alt="Screen 6" width="275"/> | <img src="https://raw.githubusercontent.com/singh3abhi/Food-Delivery-App/main/screenshots/6.png" alt="Screen 5" width="275"/> |
+| <img src="https://raw.githubusercontent.com/singh3abhi/Food-Delivery-App/main/screenshots/6.png" alt="Screen 5" width="275"/> | <img src="https://raw.githubusercontent.com/singh3abhi/Food-Delivery-App/main/screenshots/7.png" alt="Screen 6" width="275"/> | <img src="https://raw.githubusercontent.com/singh3abhi/Food-Delivery-App/main/screenshots/8.png" alt="Screen 5" width="275"/> |
 
 | Screen 9 | Screen 10 |
 | :---: | :---: |
